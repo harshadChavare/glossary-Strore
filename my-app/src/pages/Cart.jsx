@@ -7,7 +7,7 @@ const Cart = () => {
 
   const fetchCart = async () => {
     try {
-      const res = await axios.get("http://localhost:8000/cart", {
+      const res = await axios.get("https://glossary-strore.onrender.com/cart", {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("token")}`,
         },
@@ -24,7 +24,7 @@ const Cart = () => {
 
   const handlePurchase = async (id) => {
     try {
-      await axios.post(`http://localhost:8000/purchase/${id}`, {}, {
+      await axios.post(`https://glossary-strore.onrender.com/purchase/${id}`, {}, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("token")}`,
         },
@@ -38,7 +38,7 @@ const Cart = () => {
 
   const handleRemove = async (id) => {
     try {
-      await axios.delete(`http://localhost:8000/cart/remove/${id}`, {
+      await axios.delete(`https://glossary-strore.onrender.com/cart/remove/${id}`, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("token")}`,
         },

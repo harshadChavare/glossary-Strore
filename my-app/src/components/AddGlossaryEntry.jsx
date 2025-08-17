@@ -17,7 +17,7 @@ const AddGlossaryEntry = ({ onAddSuccess }) => {
     e.preventDefault();
     try {
       const token = localStorage.getItem("token");
-      await axios.post("http://localhost:8000/glossary", form, {
+      await axios.post("https://glossary-strore.onrender.com/glossary", form, {
         headers: { Authorization: `Bearer ${token}` },
       });
       setForm({ term: "", definition: "", example: "" });

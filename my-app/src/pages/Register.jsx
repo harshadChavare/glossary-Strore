@@ -8,7 +8,7 @@ const Register = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const res = await axios.post("http://localhost:8000/register", new URLSearchParams(form));
+      const res = await axios.post("https://glossary-strore.onrender.com/register", new URLSearchParams(form));
       setMessage(res.data.message || "Registration successful");
     } catch (err) {
       console.error(err);

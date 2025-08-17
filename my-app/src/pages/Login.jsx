@@ -8,7 +8,7 @@ const Login = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const res = await axios.post("http://localhost:8000/token", new URLSearchParams(form));
+      const res = await axios.post("https://glossary-strore.onrender.com/token", new URLSearchParams(form));
       localStorage.setItem("token", res.data.access_token);
       setMessage("Login successful!");
     } catch (err) {

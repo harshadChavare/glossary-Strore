@@ -16,7 +16,7 @@ const Glossary = () => {
 
   const fetchEntries = () => {
     axios
-      .get("http://localhost:8000/glossary")
+      .get("https://glossary-strore.onrender.com/glossary")
       .then((res) => setEntries(res.data))
       .catch((err) => console.error("Failed to fetch glossary:", err));
   };
@@ -27,7 +27,7 @@ const Glossary = () => {
 
   const handleDelete = async (id) => {
     try {
-      await axios.delete(`http://localhost:8000/glossary/${id}`, {
+      await axios.delete(`https://glossary-strore.onrender.com/glossary/${id}`, {
         headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
       });
       setEntries(entries.filter((e) => e.id !== id));
@@ -39,7 +39,7 @@ const Glossary = () => {
   const addToCart = async (glossaryId) => {
     try {
       await axios.post(
-        `http://localhost:8000/cart/add/${glossaryId}`,
+        `https://glossary-strore.onrender.com/cart/add/${glossaryId}`,
         {},
         {
           headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
@@ -56,7 +56,7 @@ const Glossary = () => {
   try {
     // Step 1: Add to cart
     const addRes = await axios.post(
-      `http://localhost:8000/cart/add/${glossaryId}`,
+      `https://glossary-strore.onrender.com/cart/add/${glossaryId}`,
       {},
       {
         headers: {
@@ -72,7 +72,7 @@ const Glossary = () => {
     }
 
     // Step 2: Purchase using the cart item ID
-    await axios.post(`http://localhost:8000/purchase/${cartItemId}`, {}, {
+    await axios.post(`https://glossary-strore.onrender.com/purchase/${cartItemId}`, {}, {
       headers: {
         Authorization: `Bearer ${localStorage.getItem("token")}`,
       },
@@ -93,7 +93,7 @@ const Glossary = () => {
 
   const handleAddToCart = async (glossaryId) => {
   try {
-    const res = await axios.post(`http://localhost:8000/cart/add/${glossaryId}`, {}, {
+    const res = await axios.post(`https://glossary-strore.onrender.com/cart/add/${glossaryId}`, {}, {
       headers: {
         Authorization: `Bearer ${localStorage.getItem("token")}`,
       },

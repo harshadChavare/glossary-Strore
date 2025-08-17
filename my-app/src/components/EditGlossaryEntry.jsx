@@ -17,7 +17,7 @@ const EditGlossaryEntry = ({ entry, onCancel, onSave }) => {
     e.preventDefault();
     try {
       const token = localStorage.getItem("token");
-      await axios.put(`http://localhost:8000/glossary/${entry.id}`, form, {
+      await axios.put(`https://glossary-strore.onrender.com/glossary/${entry.id}`, form, {
         headers: { Authorization: `Bearer ${token}` },
       });
       onSave();

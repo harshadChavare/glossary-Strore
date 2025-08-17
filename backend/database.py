@@ -6,7 +6,9 @@ from sqlalchemy.orm import sessionmaker
 # database.py
 
 # postgres
-DB_URL = "postgresql://postgres:123@localhost:5432/groccery"  # Change this line
+# DB_URL = "postgresql://postgres:123@localhost:5432/groccery"  # Change this line
+DB_URL="postgresql://postgres:LeBGGFcDbWgSEMBAKgOUjIABxJyzncQU@shortline.proxy.rlwy.net:51896/railway"
+
 # DATABASE_URL = "postgresql://postgres:123@localhost:5432/dbname"
 
 
