@@ -1,0 +1,5 @@
+
+INSERT INTO glossary (term, definition, example, user_id) VALUES
+('API', 'Application Programming Interface - a set of functions and procedures allowing creation of applications.', 'REST APIs are widely used in web services.', 1),
+('ORM', 'Object Relational Mapper - a programming technique for converting data between incompatible type systems.', 'SQLAlchemy is a popular Python ORM.', 1),
+('SQL', 'Structured Query Language - a domain-specific language used in programming to manage data held in relational databases.', 'SELECT * FROM users WHERE id=1;', 2);
