@@ -22,6 +22,72 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+# Auto-seed database on startup (add this)
+@app.on_event("startup")
+async def startup_event():
+    from sqlalchemy.orm import sessionmaker
+    from app.models.user import User
+    from app.models.product import Product
+    from app.core.security import get_password_hash
+    
+    SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+    db = SessionLocal()
+    
+    try:
+        # Check if products exist
+        if db.query(Product).count() == 0:
+            print("Seeding database...")
+            
+            # Create products
+            products_data = [
+                {"category": "Fruits", "name": "Apple", "price": 1.2, "stock": 100},
+                {"category": "Fruits", "name": "Banana", "price": 0.8, "stock": 150},
+                {"category": "Fruits", "name": "Orange", "price": 1.5, "stock": 80},
+                {"category": "Vegetables", "name": "Carrot", "price": 0.5, "stock": 200},
+                {"category": "Vegetables", "name": "Broccoli", "price": 2.0, "stock": 50},
+                {"category": "Vegetables", "name": "Spinach", "price": 1.8, "stock": 75},
+                {"category": "Dairy", "name": "Milk", "price": 3.5, "stock": 60},
+                {"category": "Dairy", "name": "Cheese", "price": 5.0, "stock": 40},
+                {"category": "Dairy", "name": "Yogurt", "price": 2.5, "stock": 90},
+                {"category": "Grains", "name": "Rice", "price": 4.0, "stock": 120},
+                {"category": "Grains", "name": "Wheat Flour", "price": 3.0, "stock": 100},
+                {"category": "Beverages", "name": "Orange Juice", "price": 4.5, "stock": 70}
+            ]
+            
+            for product_data in products_data:
+                product = Product(**product_data)
+                db.add(product)
+            
+            # Create admin user
+            if db.query(User).filter(User.email == "admin@ecommerce.com").count() == 0:
+                admin_user = User(
+                    name="Admin User",
+                    email="admin@ecommerce.com",
+                    password_hash=get_password_hash("admin123"),
+                    role="admin"
+                )
+                db.add(admin_user)
+            
+            # Create regular user
+            if db.query(User).filter(User.email == "user@ecommerce.com").count() == 0:
+                regular_user = User(
+                    name="Regular User",
+                    email="user@ecommerce.com",
+                    password_hash=get_password_hash("user123"),
+                    role="user"
+                )
+                db.add(regular_user)
+            
+            db.commit()
+            print("Database seeded successfully!")
+        else:
+            print("Database already has data, skipping seed.")
+    except Exception as e:
+        print(f"Error seeding database: {e}")
+        db.rollback()
+    finally:
+        db.close()
+
 # Include routers
 app.include_router(auth_router, prefix="/api")
 app.include_router(products_router, prefix="/api")
