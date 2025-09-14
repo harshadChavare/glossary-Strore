@@ -4,9 +4,10 @@ import axios from "axios";
 
 const EditGlossaryEntry = ({ entry, onCancel, onSave }) => {
   const [form, setForm] = useState({
-    term: entry.term,
-    definition: entry.definition,
-    example: entry.example || "",
+    name: entry.name,
+    category: entry.category,
+    price: entry.price,
+    stock: entry.stock,
   });
 
   const handleChange = (e) => {
@@ -17,7 +18,7 @@ const EditGlossaryEntry = ({ entry, onCancel, onSave }) => {
     e.preventDefault();
     try {
       const token = localStorage.getItem("token");
-      await axios.put(`https://glossary-strore.onrender.com/glossary/${entry.id}`, form, {
+      await axios.put(`http://127.0.0.1:8000/products/${entry.id}`, form, {
         headers: { Authorization: `Bearer ${token}` },
       });
       onSave();
@@ -29,9 +30,10 @@ const EditGlossaryEntry = ({ entry, onCancel, onSave }) => {
 
   return (
     <form onSubmit={handleSubmit} className="edit-form">
-      <input name="term" value={form.term} onChange={handleChange} required />
-      <textarea name="definition" value={form.definition} onChange={handleChange} required />
-      <input name="example" value={form.example} onChange={handleChange} />
+      <input name="name" value={form.name} onChange={handleChange} required />
+      <input name="category" value={form.category} onChange={handleChange} required />
+      <input name="price" type="number" value={form.price} onChange={handleChange} required />
+      <input name="stock" type="number" value={form.stock} onChange={handleChange} required />
       <button type="submit">💾 Save</button>
       <button type="button" onClick={onCancel} style={{ marginLeft: "1rem" }}>
         ❌ Cancel

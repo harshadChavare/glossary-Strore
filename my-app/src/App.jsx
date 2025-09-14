@@ -1,31 +1,71 @@
-// src/App.jsx
-import React from "react";
-import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
-import Home from "./pages/Home.jsx";
-import Glossary from "./pages/Glossary.jsx";
-import Login from "./pages/Login.jsx";
-import Register from "./pages/Register.jsx";
-import Cart from "./pages/Cart.jsx";
+import React from 'react';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { AuthProvider } from './context/AuthContext';
+import Header from './components/Header';
+import Footer from './components/Footer';
+import Home from './pages/Home';
+import Products from './pages/Products';
+import ProductDetail from './pages/ProductDetail';
+import Cart from './pages/Cart';
+import Checkout from './pages/Checkout';
+import Success from './pages/Success';
+import Login from './pages/Login';
+import Register from './pages/Register';
+import Admin from './pages/Admin';
+import ProtectedRoute from './components/ProtectedRoute';
+import './App.css'; 
 
 function App() {
-  console.log("hiii")
   return (
-    <Router>
-      <nav>
-        <Link to="/">Home</Link> |{" "}
-        <Link to="/glossary">Glossary</Link> |{" "}
-        <Link to="/login">Login</Link> |{" "}
-        <Link to="/register">Register</Link>
-        <Link to="/cart">Cart</Link> |{" "}
-      </nav>
-      <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/glossary" element={<Glossary />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/register" element={<Register />} />
-        <Route path="/cart" element={<Cart />} />
-      </Routes>
-    </Router>
+    <AuthProvider>
+      <Router>
+        <div className="App">
+          <Header />
+          <main>
+            <Routes>
+              <Route path="/" element={<Home />} />
+              <Route path="/products" element={<Products />} />
+              <Route path="/product/:id" element={<ProductDetail />} />
+              <Route path="/login" element={<Login />} />
+              <Route path="/register" element={<Register />} />
+              <Route 
+                path="/cart" 
+                element={
+                  <ProtectedRoute>
+                    <Cart />
+                  </ProtectedRoute>
+                } 
+              />
+              <Route 
+                path="/checkout" 
+                element={
+                  <ProtectedRoute>
+                    <Checkout />
+                  </ProtectedRoute>
+                } 
+              />
+              <Route 
+                path="/success" 
+                element={
+                  <ProtectedRoute>
+                    <Success />
+                  </ProtectedRoute>
+                } 
+              />
+              <Route 
+                path="/admin" 
+                element={
+                  <ProtectedRoute adminOnly={true}>
+                    <Admin />
+                  </ProtectedRoute>
+                } 
+              />
+            </Routes>
+          </main>
+          <Footer />
+        </div>
+      </Router>
+    </AuthProvider>
   );
 }
 

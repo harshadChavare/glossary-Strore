@@ -16,18 +16,24 @@ const Glossary = () => {
 
   const fetchEntries = () => {
     axios
-      .get("https://glossary-strore.onrender.com/glossary")
-      .then((res) => setEntries(res.data))
-      .catch((err) => console.error("Failed to fetch glossary:", err));
+      .get("http://127.0.0.1:8000/products")
+      .then((res) => {setEntries(res.data);
+        // console.log(res.data,"dfrgthyujiklo;")
+      })
+      .catch((err) => console.error("Failed to fetch products:", err));
   };
 
   useEffect(() => {
     fetchEntries();
+    setTimeout(() => {
+    console.log('entries',entries)  
+    }, 5000);
+    
   }, []);
 
   const handleDelete = async (id) => {
     try {
-      await axios.delete(`https://glossary-strore.onrender.com/glossary/${id}`, {
+      await axios.delete(`http://127.0.0.1:8000/products/${id}`, {
         headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
       });
       setEntries(entries.filter((e) => e.id !== id));
@@ -36,10 +42,10 @@ const Glossary = () => {
     }
   };
 
-  const addToCart = async (glossaryId) => {
+  const addToCart = async (productId) => {
     try {
       await axios.post(
-        `https://glossary-strore.onrender.com/cart/add/${glossaryId}`,
+        `http://127.0.0.1:8000/products/cart/add/${productId}`,
         {},
         {
           headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
@@ -52,71 +58,66 @@ const Glossary = () => {
     }
   };
 
-  const handlePurchase = async (glossaryId) => {
-  try {
-    // Step 1: Add to cart
-    const addRes = await axios.post(
-      `https://glossary-strore.onrender.com/cart/add/${glossaryId}`,
-      {},
-      {
+  const handlePurchase = async (productId) => {
+    try {
+      const addRes = await axios.post(
+        `http://127.0.0.1:8000/products/cart/add/${productId}`,
+        {},
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        }
+      );
+
+      const cartItemId = addRes.data.id || addRes.data.cart_item_id;
+      if (!cartItemId) throw new Error("No cart item ID returned");
+
+      await axios.post(`http://127.0.0.1:8000/purchase/${cartItemId}`, {}, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("token")}`,
         },
-      }
-    );
+      });
 
-    const cartItemId = addRes.data.id || addRes.data.cart_item_id;
-
-    if (!cartItemId) {
-      throw new Error("No cart item ID returned");
+      alert("🎉 Thank you for your purchase!");
+      setTimeout(() => {
+        window.location.href = "/glossary";
+      }, 1000);
+    } catch (err) {
+      console.error("Direct purchase failed:", err);
+      alert("❌ Purchase failed. Please try again.");
     }
+  };
 
-    // Step 2: Purchase using the cart item ID
-    await axios.post(`https://glossary-strore.onrender.com/purchase/${cartItemId}`, {}, {
-      headers: {
-        Authorization: `Bearer ${localStorage.getItem("token")}`,
-      },
-    });
-
-    alert("🎉 Thank you for your purchase!");
-
-    setTimeout(() => {
-      window.location.href = "/glossary";
-    }, 1000);
-
-  } catch (err) {
-    console.error("Direct purchase failed:", err);
-    alert("❌ Purchase failed. Please try again.");
-  }
-};
-
-
-  const handleAddToCart = async (glossaryId) => {
-  try {
-    const res = await axios.post(`https://glossary-strore.onrender.com/cart/add/${glossaryId}`, {}, {
-      headers: {
-        Authorization: `Bearer ${localStorage.getItem("token")}`,
-      },
-    });
-    alert(res.data.message);
-  } catch (err) {
-    console.error("Add to cart failed:", err);
-    alert("Add to cart failed");
-  }
-};
-
+  const handleAddToCart = async (productId) => {
+    try {
+      const res = await axios.post(
+        `http://127.0.0.1:8000/products/cart/add/${productId}`,
+        {},
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        }
+      );
+      alert(res.data.message);
+    } catch (err) {
+      if(err.response.status===401){
+        alert('Please login to add to kart')
+      }
+      console.error("Add to cart failed:", err);
+      alert("Add to cart failed");
+    }
+  };
 
   return (
     <div className="glossary-container">
-      <h1 className="glossary-title">📘 Glossary</h1>
+      <h1 className="glossary-title">🛍️ Products</h1>
 
       {admin && (
         <>
-          <button
-            onClick={() => setShowAddForm(!showAddForm)}
-            className="add-btn"
-          >
-            {showAddForm ? "➖ Hide Form" : "➕ Add New Term"}
+          <button onClick={() => setShowAddForm(!showAddForm)} className="add-btn">
+            {showAddForm ? "➖ Hide Form" : "➕ Add New Product"}
           </button>
           {showAddForm && <AddGlossaryEntry onAddSuccess={fetchEntries} />}
         </>
@@ -136,19 +137,14 @@ const Glossary = () => {
               />
             ) : (
               <>
-                <h2 className="term">{entry.term}</h2>
-                <p className="definition">{entry.definition}</p>
-                {entry.example && (
-                  <div className="example">
-                    <strong>Example:</strong> <em>{entry.example}</em>
-                  </div>
-                )}
+                <h2 className="term">{entry.name}</h2>
+                <p className="definition"><strong>Category:</strong> {entry.category}</p>
+                <p className="definition"><strong>Price:</strong> {entry.price}</p>
+                <p className="definition"><strong>Stock:</strong> {entry.stock}</p>
 
                 {admin && (
                   <div className="admin-actions">
-                    <button onClick={() => setEditingEntryId(entry.id)}>
-                      ✏️ Edit
-                    </button>
+                    <button onClick={() => setEditingEntryId(entry.id)}>✏️ Edit</button>
                     <button onClick={() => handleDelete(entry.id)}>🗑️ Delete</button>
                   </div>
                 )}
@@ -157,6 +153,7 @@ const Glossary = () => {
                   <div className="user-actions">
                     <button onClick={() => handleAddToCart(entry.id)}>🛒 Add to Cart</button>
                     <button onClick={() => handlePurchase(entry.id)}>💳 Purchase</button>
+                    
                   </div>
                 )}
               </>
