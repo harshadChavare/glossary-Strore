@@ -15,6 +15,6 @@ class Settings:
     
     # Application Settings
     DEBUG: bool = config("DEBUG", cast=bool, default=True)
-    CORS_ORIGINS: List[str] = config("CORS_ORIGINS", default="http://localhost:3000").split(",")
+    CORS_ORIGINS: List[str] = config("CORS_ORIGINS", default="http://localhost:3000,https://smart-glossary.netlify.app").split(",")
 
 settings = Settings()
