@@ -29,15 +29,24 @@ async def startup_event():
     from app.models.user import User
     from app.models.product import Product
     from app.core.security import get_password_hash
-    
-    # DROP ALL TABLES AND RECREATE (this will delete existing data)
-    Base.metadata.drop_all(bind=engine)
-    Base.metadata.create_all(bind=engine)
+    from sqlalchemy import text
     
     SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
     db = SessionLocal()
     
     try:
+        print("Resetting database...")
+        
+        # Use raw SQL to drop all tables with CASCADE
+        db.execute(text("DROP SCHEMA public CASCADE"))
+        db.execute(text("CREATE SCHEMA public"))
+        db.execute(text("GRANT ALL ON SCHEMA public TO postgres"))
+        db.execute(text("GRANT ALL ON SCHEMA public TO public"))
+        db.commit()
+        
+        # Now create all tables fresh
+        Base.metadata.create_all(bind=engine)
+        
         print("Seeding fresh database...")
         
         # Create admin user
@@ -79,10 +88,10 @@ async def startup_event():
             db.add(product)
         
         db.commit()
-        print("Database seeded successfully!")
+        print("Database reset and seeded successfully!")
         
     except Exception as e:
-        print(f"Error seeding database: {e}")
+        print(f"Error resetting database: {e}")
         db.rollback()
     finally:
         db.close()
