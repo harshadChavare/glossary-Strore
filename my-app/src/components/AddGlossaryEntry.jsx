@@ -4,9 +4,10 @@ import axios from "axios";
 
 const AddGlossaryEntry = ({ onAddSuccess }) => {
   const [form, setForm] = useState({
-    term: "",
-    definition: "",
-    example: "",
+    name: "",
+    category: "",
+    price: "",
+    stock: "",
   });
 
   const handleChange = (e) => {
@@ -17,22 +18,23 @@ const AddGlossaryEntry = ({ onAddSuccess }) => {
     e.preventDefault();
     try {
       const token = localStorage.getItem("token");
-      await axios.post("https://glossary-strore.onrender.com/glossary", form, {
+      await axios.post("http://127.0.0.1:8000/products", form, {
         headers: { Authorization: `Bearer ${token}` },
       });
-      setForm({ term: "", definition: "", example: "" });
-      onAddSuccess(); // Refresh glossary
+      setForm({ name: "", category: "", price: "", stock: "" });
+      onAddSuccess();
     } catch (err) {
       console.error("Add failed", err);
-      alert("Failed to add entry");
+      alert("Failed to add product");
     }
   };
 
   return (
     <form onSubmit={handleSubmit} className="add-form">
-      <input name="term" placeholder="Term" value={form.term} onChange={handleChange} required />
-      <textarea name="definition" placeholder="Definition" value={form.definition} onChange={handleChange} required />
-      <input name="example" placeholder="Example" value={form.example} onChange={handleChange} />
+      <input name="name" placeholder="Product Name" value={form.name} onChange={handleChange} required />
+      <input name="category" placeholder="Category" value={form.category} onChange={handleChange} required />
+      <input name="price" type="number" placeholder="Price" value={form.price} onChange={handleChange} required />
+      <input name="stock" type="number" placeholder="Stock" value={form.stock} onChange={handleChange} required />
       <button type="submit">➕ Submit</button>
     </form>
   );

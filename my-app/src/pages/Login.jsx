@@ -1,33 +1,87 @@
-import React, { useState } from "react";
-import axios from "axios";
+import React, { useState } from 'react';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
 
 const Login = () => {
-  const [form, setForm] = useState({ username: "", password: "" });
-  const [message, setMessage] = useState("");
+  const [formData, setFormData] = useState({
+    email: '',
+    password: '',
+  });
+  const [error, setError] = useState('');
+  const { login, loading } = useAuth();
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  const from = location.state?.from?.pathname || '/';
+
+  const handleChange = (e) => {
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value,
+    });
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    try {
-      const res = await axios.post("https://glossary-strore.onrender.com/token", new URLSearchParams(form));
-      localStorage.setItem("token", res.data.access_token);
-      setMessage("Login successful!");
-    } catch (err) {
-      console.error(err);
-      setMessage("Login failed.");
+    setError('');
+
+    const result = await login(formData);
+    if (result.success) {
+      navigate(from, { replace: true });
+    } else {
+      setError(result.error);
     }
   };
 
   return (
-    <div>
-      <h2>Login</h2>
-      <form onSubmit={handleSubmit}>
-        <input type="text" placeholder="Username" required value={form.username} onChange={(e) => setForm({ ...form, username: e.target.value })} />
-        <br />
-        <input type="password" placeholder="Password" required value={form.password} onChange={(e) => setForm({ ...form, password: e.target.value })} />
-        <br />
-        <button type="submit">Login</button>
-      </form>
-      <p>{message}</p>
+    <div className="auth-page">
+      <div className="container">
+        <div className="auth-form">
+          <h2>Login</h2>
+          
+          {error && <div className="error-message">{error}</div>}
+          
+          <form onSubmit={handleSubmit}>
+            <div className="form-group">
+              <label htmlFor="email">Email</label>
+              <input
+                type="email"
+                id="email"
+                name="email"
+                value={formData.email}
+                onChange={handleChange}
+                required
+              />
+            </div>
+            
+            <div className="form-group">
+              <label htmlFor="password">Password</label>
+              <input
+                type="password"
+                id="password"
+                name="password"
+                value={formData.password}
+                onChange={handleChange}
+                required
+              />
+            </div>
+            
+            <button type="submit" className="btn btn-primary" disabled={loading}>
+              {loading ? 'Logging in...' : 'Login'}
+            </button>
+          </form>
+          
+          <p className="auth-link">
+            Don't have an account? <Link to="/register">Register here</Link>
+          </p>
+          
+          <div className="demo-credentials">
+            <h4>Demo Credentials:</h4>
+            <p><strong>Admin:</strong> admin@ecommerce.com / admin123</p>
+            <p><strong>User:</strong> user@ecommerce.com / user123</p>
+          </div>
+        </div>
+      </div>
     </div>
   );
 };
