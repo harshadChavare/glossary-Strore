@@ -9,6 +9,7 @@ const Cart = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
+    // Fetch
     fetchCart();
   }, []);
 
